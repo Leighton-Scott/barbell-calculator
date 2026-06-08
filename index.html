@@ -11,8 +11,8 @@
     <title>Barbell Calculator</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
     <link rel="manifest" href="./site.webmanifest">
-    <link rel="stylesheet" href="./src/styles.css?v=7">
-    <script type="module" src="./src/app.js?v=5"></script>
+    <link rel="stylesheet" href="./src/styles.css?v=8">
+    <script type="module" src="./src/app.js?v=6"></script>
   </head>
   <body>
     <main class="app-shell">
@@ -118,8 +118,14 @@
             <h2 id="tools-title">Plan the next lift</h2>
           </div>
 
+          <div class="tools-tabs" role="tablist" aria-label="Training tool views">
+            <button id="warmup-tab" type="button" role="tab" aria-selected="true" aria-controls="warmup-panel" data-tool-tab="warmup">Warm-up</button>
+            <button id="one-rep-tab" type="button" role="tab" aria-selected="false" aria-controls="one-rep-panel" data-tool-tab="one-rep">1RM</button>
+            <button id="percent-tab" type="button" role="tab" aria-selected="false" aria-controls="percent-panel" data-tool-tab="percent">Percent</button>
+          </div>
+
           <div class="tools-grid">
-            <article class="tool-panel">
+            <article class="tool-panel" id="warmup-panel" role="tabpanel" aria-labelledby="warmup-tab" data-tool-panel="warmup">
               <div class="tool-title-row">
                 <h3>Warm-up</h3>
                 <span>Ramp sets</span>
@@ -136,7 +142,7 @@
               <div class="result-list" id="warmup-list" aria-live="polite"></div>
             </article>
 
-            <article class="tool-panel">
+            <article class="tool-panel" id="one-rep-panel" role="tabpanel" aria-labelledby="one-rep-tab" data-tool-panel="one-rep" hidden>
               <div class="tool-title-row">
                 <h3>One-rep max</h3>
                 <span>Estimate</span>
@@ -157,7 +163,7 @@
               <div class="formula-results" id="one-rep-results" aria-live="polite"></div>
             </article>
 
-            <article class="tool-panel">
+            <article class="tool-panel" id="percent-panel" role="tabpanel" aria-labelledby="percent-tab" data-tool-panel="percent" hidden>
               <div class="tool-title-row">
                 <h3>Percent loads</h3>
                 <span>70-90%</span>
@@ -175,6 +181,14 @@
             </article>
           </div>
         </section>
+      </section>
+
+      <section class="sticky-load" aria-label="Current barbell load">
+        <div>
+          <span>Load this</span>
+          <strong id="sticky-load-weight">185 lb</strong>
+        </div>
+        <p id="sticky-load-plates">45 + 25</p>
       </section>
     </main>
   </body>

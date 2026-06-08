@@ -52,6 +52,10 @@ const oneRepResults = document.querySelector("#one-rep-results");
 const percentMaxInput = document.querySelector("#percent-max");
 const percentList = document.querySelector("#percent-list");
 const unitLabels = [...document.querySelectorAll("[data-unit-label]")];
+const toolTabs = [...document.querySelectorAll("[data-tool-tab]")];
+const toolPanels = [...document.querySelectorAll("[data-tool-panel]")];
+const stickyLoadWeight = document.querySelector("#sticky-load-weight");
+const stickyLoadPlates = document.querySelector("#sticky-load-plates");
 
 function currentUnit() {
   return unitInputs.find((input) => input.checked)?.value ?? "lb";
@@ -131,23 +135,65 @@ function formatPlateText(plates) {
     : "Empty bar";
 }
 
-function formatSetupDetail(setup) {
-  const platesText = formatPlateText(setup.platesPerSide);
-  return `${formatWeight(setup.sideWeight)} ${setup.config.unit} per side: ${platesText}`;
+function createPlateChipElement(weight, unit) {
+  const meta = plateMeta[weight] ?? { className: "plate-generic", label: formatWeight(weight) };
+  const chip = document.createElement("span");
+  chip.className = `plate-chip ${meta.className}`;
+  chip.textContent = meta.label;
+  chip.title = `${meta.label} ${unit} plate`;
+  return chip;
+}
+
+function createPlateChips(plates, unit) {
+  const chips = document.createElement("span");
+  chips.className = "plate-chip-list";
+
+  if (plates.length === 0) {
+    const empty = document.createElement("span");
+    empty.className = "plate-chip-empty";
+    empty.textContent = "Empty bar";
+    chips.append(empty);
+    return chips;
+  }
+
+  for (const plate of plates) {
+    chips.append(createPlateChipElement(plate, unit));
+  }
+
+  return chips;
+}
+
+function createSetupDetail(setup, prefix = "") {
+  const detail = document.createElement("p");
+
+  if (prefix) {
+    detail.append(document.createTextNode(prefix));
+  }
+
+  detail.append(document.createTextNode(`${formatWeight(setup.sideWeight)} ${setup.config.unit} per side `));
+  detail.append(createPlateChips(setup.platesPerSide, setup.config.unit));
+
+  return detail;
 }
 
 function createResultRow(kicker, primary, detail) {
   const row = document.createElement("div");
   const label = document.createElement("span");
   const value = document.createElement("strong");
-  const note = document.createElement("p");
 
   row.className = "result-row";
   label.className = "result-kicker";
   label.textContent = kicker;
   value.textContent = primary;
-  note.textContent = detail;
-  row.append(label, value, note);
+  row.append(label, value);
+
+  if (detail instanceof Node) {
+    row.append(detail);
+  } else {
+    const note = document.createElement("p");
+    note.textContent = detail;
+    row.append(note);
+  }
 
   return row;
 }
@@ -214,8 +260,12 @@ function updateCalculator() {
   differenceWeight.textContent = cappedLabel;
   perSideTotal.textContent = `${formatWeight(setup.sideWeight)} ${config.unit}`;
   plateList.textContent = platesText;
-  inputHelp.textContent = `Total bar weight, including the bar. Max load is ${formatWeight(config.maxWeight)} ${config.unit}.`;
+  inputHelp.textContent = setup.targetWeight === null
+    ? `Enter a target weight. Empty bar is the minimum load at ${formatWeight(config.barWeight)} ${config.unit}.`
+    : `Total bar weight, including the bar. Max load is ${formatWeight(config.maxWeight)} ${config.unit}.`;
   unitSuffix.textContent = config.unit;
+  stickyLoadWeight.textContent = `${formatWeight(setup.actualWeight)} ${config.unit}`;
+  stickyLoadPlates.textContent = platesText;
   barbellVisual.style.setProperty("--plate-scale", String(plateScale));
   barbellVisual.style.setProperty("--height-scale", String(heightScale));
   barbellVisual.dataset.load = setup.platesPerSide.length >= 10 ? "heavy" : "normal";
@@ -250,7 +300,7 @@ function renderWarmupSets(config) {
     warmupList.append(createResultRow(
       `${set.label} x ${set.reps}`,
       `${formatWeight(set.setup.actualWeight)} ${config.unit}`,
-      formatSetupDetail(set.setup)
+      createSetupDetail(set.setup)
     ));
   }
 }
@@ -268,7 +318,7 @@ function renderOneRepMax(config) {
   oneRepResults.append(createResultRow(
     "Average",
     `${formatWeight(result.average)} ${config.unit}`,
-    `Closest load: ${formatWeight(averageSetup.actualWeight)} ${config.unit}, ${formatSetupDetail(averageSetup)}`
+    createSetupDetail(averageSetup, `Closest load ${formatWeight(averageSetup.actualWeight)} ${config.unit} | `)
   ));
 
   for (const estimate of result.estimates) {
@@ -293,9 +343,20 @@ function renderPercentLoads(config) {
     percentList.append(createResultRow(
       `${load.percent}%`,
       `${formatWeight(load.setup.actualWeight)} ${config.unit}`,
-      `Target ${formatWeight(load.targetWeight)} ${config.unit} | ${formatSetupDetail(load.setup)}`
+      createSetupDetail(load.setup, `Target ${formatWeight(load.targetWeight)} ${config.unit} | `)
     ));
   }
+}
+
+function setActiveTool(activeTool) {
+  toolTabs.forEach((tab) => {
+    const isActive = tab.dataset.toolTab === activeTool;
+    tab.setAttribute("aria-selected", String(isActive));
+  });
+
+  toolPanels.forEach((panel) => {
+    panel.hidden = panel.dataset.toolPanel !== activeTool;
+  });
 }
 
 targetInput.addEventListener("input", updateCalculator);
@@ -305,6 +366,9 @@ inventoryToggle.addEventListener("change", updateInventoryVisibility);
 unitInputs.forEach((input) => input.addEventListener("change", updateUnitState));
 [warmupWeightInput, oneRepWeightInput, oneRepRepsInput, percentMaxInput].forEach((input) => {
   input.addEventListener("input", updateCalculator);
+});
+toolTabs.forEach((tab) => {
+  tab.addEventListener("click", () => setActiveTool(tab.dataset.toolTab));
 });
 
 document.querySelectorAll("form").forEach((form) => {
@@ -318,4 +382,5 @@ barWeightInput.value = String(BAR_WEIGHT);
 targetInput.max = String(MAX_WEIGHT);
 roundingModeInput.value = ROUNDING_MODES.nearest;
 renderInventoryFields();
+setActiveTool("warmup");
 updateInventoryVisibility();
