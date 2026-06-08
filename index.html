@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111827">
+    <meta
+      name="description"
+      content="Calculate the closest Olympic barbell plate setup for any target weight."
+    >
+    <title>Barbell Calculator</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="./site.webmanifest">
+    <link rel="stylesheet" href="./src/styles.css">
+    <script type="module" src="./src/app.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="calculator" aria-labelledby="app-title">
+        <div class="title-block">
+          <p class="eyebrow">Olympic barbell</p>
+          <h1 id="app-title">Barbell Calculator</h1>
+          <p class="subtitle">Enter a target total and load the closest possible 45 lb bar.</p>
+        </div>
+
+        <form class="target-form" id="target-form">
+          <label for="target-weight">Target weight</label>
+          <div class="input-row">
+            <input
+              id="target-weight"
+              name="target-weight"
+              type="number"
+              inputmode="decimal"
+              min="0"
+              step="0.5"
+              value="185"
+              aria-describedby="input-help"
+            >
+            <span aria-hidden="true">lb</span>
+          </div>
+          <p id="input-help" class="input-help">Total bar weight, including the bar.</p>
+        </form>
+
+        <section class="summary-grid" aria-label="Calculated barbell setup">
+          <article class="metric">
+            <span class="metric-label">Requested</span>
+            <strong id="requested-weight">185 lb</strong>
+          </article>
+          <article class="metric primary">
+            <span class="metric-label">Load this</span>
+            <strong id="actual-weight">185 lb</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">Difference</span>
+            <strong id="difference-weight">Exact</strong>
+          </article>
+        </section>
+
+        <section class="barbell-stage" aria-label="Visual barbell">
+          <div class="barbell" id="barbell-visual" role="img" aria-label="185 lb barbell loaded with 45 and 25 lb plates on each side">
+            <div class="sleeve sleeve-left" id="left-plates" aria-hidden="true"></div>
+            <div class="shaft" aria-hidden="true"></div>
+            <div class="sleeve sleeve-right" id="right-plates" aria-hidden="true"></div>
+          </div>
+        </section>
+
+        <section class="plate-readout" aria-label="Plate loading details">
+          <div>
+            <span class="readout-label">Per side</span>
+            <strong id="per-side-total">70 lb</strong>
+          </div>
+          <p id="plate-list">45 + 25</p>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

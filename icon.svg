@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Barbell Calculator icon">
+  <rect width="512" height="512" rx="96" fill="#17202f"/>
+  <rect x="82" y="236" width="348" height="40" rx="20" fill="#d8dee8"/>
+  <rect x="62" y="168" width="42" height="176" rx="12" fill="#0f766e"/>
+  <rect x="116" y="138" width="58" height="236" rx="14" fill="#2563eb"/>
+  <rect x="338" y="138" width="58" height="236" rx="14" fill="#2563eb"/>
+  <rect x="408" y="168" width="42" height="176" rx="12" fill="#0f766e"/>
+  <circle cx="256" cy="256" r="70" fill="#ffffff"/>
+  <text x="256" y="283" text-anchor="middle" fill="#17202f" font-family="Arial, sans-serif" font-size="72" font-weight="800">45</text>
+</svg>
