@@ -27,7 +27,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -135,6 +136,158 @@ h1 {
   margin: 0;
   color: var(--muted);
   font-size: 0.95rem;
+}
+
+.settings-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(108px, 0.55fr) minmax(150px, 0.8fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.segmented-field {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.segmented-field legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.segmented-field label {
+  min-width: 0;
+  cursor: pointer;
+}
+
+.segmented-field input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented-field span {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 850;
+}
+
+.segmented-field input:checked + span {
+  background: #17202f;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(23, 32, 47, 0.16);
+}
+
+.compact-field {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.compact-field span,
+.inventory-panel p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.compact-field input,
+.compact-field select,
+.inventory-item input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
+  outline: none;
+}
+
+.compact-field input,
+.compact-field select {
+  padding: 0 12px;
+}
+
+.compact-field input:focus,
+.compact-field select:focus,
+.inventory-item input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.14);
+}
+
+.inventory-section {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.toggle-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--ink);
+  font-weight: 850;
+}
+
+.toggle-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.inventory-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.inventory-panel[hidden] {
+  display: none;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.inventory-item {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.inventory-item span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-align: center;
+}
+
+.inventory-item input {
+  padding: 0 8px;
+  text-align: center;
 }
 
 .summary-grid {
@@ -298,6 +451,24 @@ h1 {
   background: #2563eb;
 }
 
+.plate-20 {
+  --plate-width: 22px;
+  --plate-height: 124px;
+  --plate-font: 0.7rem;
+  --plate-ink: #17202f;
+  --plate-shadow: none;
+  background: #facc15;
+}
+
+.plate-15 {
+  --plate-width: 20px;
+  --plate-height: 108px;
+  --plate-font: 0.68rem;
+  --plate-ink: #fff;
+  --plate-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  background: #16a34a;
+}
+
 .plate-10 {
   --plate-width: 18px;
   --plate-height: 92px;
@@ -323,6 +494,24 @@ h1 {
   --plate-ink: #17202f;
   --plate-shadow: none;
   background: #facc15;
+}
+
+.plate-1-25 {
+  --plate-width: 22px;
+  --plate-height: 48px;
+  --plate-font: 0.48rem;
+  --plate-ink: #17202f;
+  --plate-shadow: none;
+  background: #e5e7eb;
+}
+
+.plate-generic {
+  --plate-width: 20px;
+  --plate-height: 80px;
+  --plate-font: 0.62rem;
+  --plate-ink: #fff;
+  --plate-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  background: #475569;
 }
 
 .barbell[data-load="heavy"] .plate {
@@ -385,6 +574,14 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .settings-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .barbell-stage {
     min-height: 210px;
     padding: 10px;
@@ -413,7 +610,9 @@ h1 {
 
   .plate-45,
   .plate-35,
-  .plate-25 {
+  .plate-25,
+  .plate-20,
+  .plate-15 {
     font-size: 0.58rem;
   }
 

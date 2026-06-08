@@ -11,8 +11,8 @@
     <title>Barbell Calculator</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
     <link rel="manifest" href="./site.webmanifest">
-    <link rel="stylesheet" href="./src/styles.css?v=3">
-    <script type="module" src="./src/app.js?v=3"></script>
+    <link rel="stylesheet" href="./src/styles.css?v=4">
+    <script type="module" src="./src/app.js?v=4"></script>
   </head>
   <body>
     <main class="app-shell">
@@ -20,7 +20,7 @@
         <div class="title-block">
           <p class="eyebrow">Olympic barbell</p>
           <h1 id="app-title">Barbell Calculator</h1>
-          <p class="subtitle">Enter a target total and load the closest possible 45 lb bar.</p>
+          <p class="subtitle">Enter a target total and load the closest possible bar for your gym setup.</p>
         </div>
 
         <form class="target-form" id="target-form">
@@ -37,10 +37,49 @@
               value="185"
               aria-describedby="input-help"
             >
-            <span aria-hidden="true">lb</span>
+            <span id="unit-suffix" aria-hidden="true">lb</span>
           </div>
           <p id="input-help" class="input-help">Total bar weight, including the bar. Max load is 1000 lb.</p>
         </form>
+
+        <section class="settings-panel" aria-label="Equipment settings">
+          <fieldset class="segmented-field">
+            <legend>Units</legend>
+            <label>
+              <input type="radio" name="unit" value="lb" checked>
+              <span>lb</span>
+            </label>
+            <label>
+              <input type="radio" name="unit" value="kg">
+              <span>kg</span>
+            </label>
+          </fieldset>
+
+          <label class="compact-field" for="bar-weight">
+            <span>Bar</span>
+            <input id="bar-weight" type="number" inputmode="decimal" min="1" max="1000" step="0.5" value="45">
+          </label>
+
+          <label class="compact-field" for="rounding-mode">
+            <span>Rounding</span>
+            <select id="rounding-mode">
+              <option value="nearest">Nearest</option>
+              <option value="under">Under</option>
+              <option value="over">Over</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="inventory-section" aria-label="Plate inventory settings">
+          <label class="toggle-row" for="inventory-toggle">
+            <input id="inventory-toggle" type="checkbox">
+            <span>Limit plate inventory</span>
+          </label>
+          <div id="inventory-panel" class="inventory-panel" hidden>
+            <p>Pairs available per side</p>
+            <div id="inventory-grid" class="inventory-grid"></div>
+          </div>
+        </section>
 
         <section class="summary-grid" aria-label="Calculated barbell setup">
           <article class="metric">
