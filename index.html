@@ -11,8 +11,8 @@
     <title>Barbell Calculator</title>
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
     <link rel="manifest" href="./site.webmanifest">
-    <link rel="stylesheet" href="./src/styles.css?v=4">
-    <script type="module" src="./src/app.js?v=4"></script>
+    <link rel="stylesheet" href="./src/styles.css?v=5">
+    <script type="module" src="./src/app.js?v=5"></script>
   </head>
   <body>
     <main class="app-shell">
@@ -110,6 +110,70 @@
             <strong id="per-side-total">70 lb</strong>
           </div>
           <p id="plate-list">45 + 25</p>
+        </section>
+
+        <section class="tools-section" aria-labelledby="tools-title">
+          <div class="tools-heading">
+            <p class="eyebrow">Training tools</p>
+            <h2 id="tools-title">Plan the next lift</h2>
+          </div>
+
+          <div class="tools-grid">
+            <article class="tool-panel">
+              <div class="tool-title-row">
+                <h3>Warm-up</h3>
+                <span>Ramp sets</span>
+              </div>
+              <form class="tool-form" id="warmup-form">
+                <label class="compact-field" for="warmup-weight">
+                  <span>Working weight</span>
+                  <div class="inline-input">
+                    <input id="warmup-weight" type="number" inputmode="decimal" min="0" max="1000" step="0.5" value="225">
+                    <strong data-unit-label>lb</strong>
+                  </div>
+                </label>
+              </form>
+              <div class="result-list" id="warmup-list" aria-live="polite"></div>
+            </article>
+
+            <article class="tool-panel">
+              <div class="tool-title-row">
+                <h3>One-rep max</h3>
+                <span>Estimate</span>
+              </div>
+              <form class="tool-form two-column" id="one-rep-form">
+                <label class="compact-field" for="one-rep-weight">
+                  <span>Weight</span>
+                  <div class="inline-input">
+                    <input id="one-rep-weight" type="number" inputmode="decimal" min="0" max="1000" step="0.5" value="185">
+                    <strong data-unit-label>lb</strong>
+                  </div>
+                </label>
+                <label class="compact-field" for="one-rep-reps">
+                  <span>Reps</span>
+                  <input id="one-rep-reps" type="number" inputmode="numeric" min="1" max="36" step="1" value="5">
+                </label>
+              </form>
+              <div class="formula-results" id="one-rep-results" aria-live="polite"></div>
+            </article>
+
+            <article class="tool-panel">
+              <div class="tool-title-row">
+                <h3>Percent loads</h3>
+                <span>70-90%</span>
+              </div>
+              <form class="tool-form" id="percent-form">
+                <label class="compact-field" for="percent-max">
+                  <span>Max</span>
+                  <div class="inline-input">
+                    <input id="percent-max" type="number" inputmode="decimal" min="0" max="1000" step="0.5" value="225">
+                    <strong data-unit-label>lb</strong>
+                  </div>
+                </label>
+              </form>
+              <div class="result-list" id="percent-list" aria-live="polite"></div>
+            </article>
+          </div>
         </section>
       </section>
     </main>

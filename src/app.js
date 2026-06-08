@@ -4,8 +4,11 @@ import {
   MAX_WEIGHT,
   ROUNDING_MODES,
   UNIT_PRESETS,
-  calculateBarbellSetup
-} from "./calculator.js?v=4";
+  calculateBarbellSetup,
+  calculateOneRepMax,
+  calculatePercentLoads,
+  calculateWarmupSets
+} from "./calculator.js?v=5";
 
 const plateMeta = {
   45: { className: "plate-45", label: "45" },
@@ -41,6 +44,14 @@ const plateList = document.querySelector("#plate-list");
 const leftPlates = document.querySelector("#left-plates");
 const rightPlates = document.querySelector("#right-plates");
 const barbellVisual = document.querySelector("#barbell-visual");
+const warmupWeightInput = document.querySelector("#warmup-weight");
+const warmupList = document.querySelector("#warmup-list");
+const oneRepWeightInput = document.querySelector("#one-rep-weight");
+const oneRepRepsInput = document.querySelector("#one-rep-reps");
+const oneRepResults = document.querySelector("#one-rep-results");
+const percentMaxInput = document.querySelector("#percent-max");
+const percentList = document.querySelector("#percent-list");
+const unitLabels = [...document.querySelectorAll("[data-unit-label]")];
 
 function currentUnit() {
   return unitInputs.find((input) => input.checked)?.value ?? "lb";
@@ -72,7 +83,8 @@ function readInventoryCounts() {
 }
 
 function formatWeight(value) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(value % 1 === 0 ? 0 : 2).replace(/0$/, "");
+  const rounded = Math.round(value * 100) / 100;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2).replace(/\.?0+$/, "");
 }
 
 function formatDifference(value, unit) {
@@ -113,6 +125,33 @@ function renderPlates(container, plates, side, unit) {
   }
 }
 
+function formatPlateText(plates) {
+  return plates.length > 0
+    ? plates.map(formatWeight).join(" + ")
+    : "Empty bar";
+}
+
+function formatSetupDetail(setup) {
+  const platesText = formatPlateText(setup.platesPerSide);
+  return `${formatWeight(setup.sideWeight)} ${setup.config.unit} per side: ${platesText}`;
+}
+
+function createResultRow(kicker, primary, detail) {
+  const row = document.createElement("div");
+  const label = document.createElement("span");
+  const value = document.createElement("strong");
+  const note = document.createElement("p");
+
+  row.className = "result-row";
+  label.className = "result-kicker";
+  label.textContent = kicker;
+  value.textContent = primary;
+  note.textContent = detail;
+  row.append(label, value, note);
+
+  return row;
+}
+
 function renderInventoryFields() {
   const preset = currentPreset();
   const savedCounts = readInventoryCounts();
@@ -136,8 +175,17 @@ function renderInventoryFields() {
 function updateUnitState() {
   const preset = currentPreset();
   unitSuffix.textContent = preset.unit;
+  unitLabels.forEach((label) => {
+    label.textContent = preset.unit;
+  });
   targetInput.max = String(preset.maxWeight);
   targetInput.step = preset.unit === "kg" ? "1.25" : "0.5";
+  warmupWeightInput.max = String(preset.maxWeight);
+  warmupWeightInput.step = preset.unit === "kg" ? "1.25" : "0.5";
+  oneRepWeightInput.max = String(preset.maxWeight);
+  oneRepWeightInput.step = preset.unit === "kg" ? "1.25" : "0.5";
+  percentMaxInput.max = String(preset.maxWeight);
+  percentMaxInput.step = preset.unit === "kg" ? "1.25" : "0.5";
   barWeightInput.value = String(preset.barWeight);
   barWeightInput.step = preset.unit === "kg" ? "1.25" : "0.5";
   barWeightInput.max = String(preset.maxWeight);
@@ -157,9 +205,7 @@ function updateCalculator() {
   const cappedLabel = setup.targetWeight !== null && setup.targetWeight > config.maxWeight
     ? "Capped at max"
     : formatDifference(setup.difference, config.unit);
-  const platesText = setup.platesPerSide.length > 0
-    ? setup.platesPerSide.map(formatWeight).join(" + ")
-    : "Empty bar";
+  const platesText = formatPlateText(setup.platesPerSide);
   const plateScale = Math.max(0.48, Math.min(1, 7.5 / Math.max(setup.platesPerSide.length, 7.5)));
   const heightScale = Math.max(0.86, Math.min(1, 0.82 + plateScale * 0.18));
 
@@ -181,6 +227,75 @@ function updateCalculator() {
     "aria-label",
     `${formatWeight(setup.actualWeight)} ${config.unit} barbell loaded with ${platesText} per side`
   );
+
+  updateTrainingTools(config);
+}
+
+function updateTrainingTools(config) {
+  renderWarmupSets(config);
+  renderOneRepMax(config);
+  renderPercentLoads(config);
+}
+
+function renderWarmupSets(config) {
+  const sets = calculateWarmupSets(warmupWeightInput.value, config);
+  warmupList.replaceChildren();
+
+  if (sets.length === 0) {
+    warmupList.append(createResultRow("Warm-up", "Empty bar", "No additional ramp sets needed."));
+    return;
+  }
+
+  for (const set of sets) {
+    warmupList.append(createResultRow(
+      `${set.label} x ${set.reps}`,
+      `${formatWeight(set.setup.actualWeight)} ${config.unit}`,
+      formatSetupDetail(set.setup)
+    ));
+  }
+}
+
+function renderOneRepMax(config) {
+  const result = calculateOneRepMax(oneRepWeightInput.value, oneRepRepsInput.value);
+  oneRepResults.replaceChildren();
+
+  if (result.estimates.length === 0) {
+    oneRepResults.append(createResultRow("Estimate", "--", "Enter weight and reps to calculate."));
+    return;
+  }
+
+  const averageSetup = calculateBarbellSetup(result.average, config);
+  oneRepResults.append(createResultRow(
+    "Average",
+    `${formatWeight(result.average)} ${config.unit}`,
+    `Closest load: ${formatWeight(averageSetup.actualWeight)} ${config.unit}, ${formatSetupDetail(averageSetup)}`
+  ));
+
+  for (const estimate of result.estimates) {
+    oneRepResults.append(createResultRow(
+      estimate.name,
+      `${formatWeight(estimate.value)} ${config.unit}`,
+      `${formatWeight(result.weight)} ${config.unit} x ${result.reps}`
+    ));
+  }
+}
+
+function renderPercentLoads(config) {
+  const loads = calculatePercentLoads(percentMaxInput.value, config);
+  percentList.replaceChildren();
+
+  if (loads.length === 0) {
+    percentList.append(createResultRow("Percent", "--", "Enter a max to calculate training loads."));
+    return;
+  }
+
+  for (const load of loads) {
+    percentList.append(createResultRow(
+      `${load.percent}%`,
+      `${formatWeight(load.setup.actualWeight)} ${config.unit}`,
+      `Target ${formatWeight(load.targetWeight)} ${config.unit} | ${formatSetupDetail(load.setup)}`
+    ));
+  }
 }
 
 targetInput.addEventListener("input", updateCalculator);
@@ -188,10 +303,15 @@ barWeightInput.addEventListener("input", updateCalculator);
 roundingModeInput.addEventListener("change", updateCalculator);
 inventoryToggle.addEventListener("change", updateInventoryVisibility);
 unitInputs.forEach((input) => input.addEventListener("change", updateUnitState));
+[warmupWeightInput, oneRepWeightInput, oneRepRepsInput, percentMaxInput].forEach((input) => {
+  input.addEventListener("input", updateCalculator);
+});
 
-document.querySelector("#target-form").addEventListener("submit", (event) => {
-  event.preventDefault();
-  targetInput.blur();
+document.querySelectorAll("form").forEach((form) => {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    document.activeElement.blur();
+  });
 });
 
 barWeightInput.value = String(BAR_WEIGHT);

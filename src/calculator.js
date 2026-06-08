@@ -54,6 +54,94 @@ export function calculateBarbellSetup(inputValue, options = {}) {
   };
 }
 
+export function calculateWarmupSets(workingWeightValue, options = {}) {
+  const workingSetup = calculateBarbellSetup(workingWeightValue, options);
+  const { config } = workingSetup;
+  const workingWeight = workingSetup.actualWeight;
+  const targets = [
+    { label: "Empty bar", percent: null, targetWeight: config.barWeight, reps: "8-10" },
+    { label: "50%", percent: 50, targetWeight: workingWeight * 0.5, reps: "5" },
+    { label: "65%", percent: 65, targetWeight: workingWeight * 0.65, reps: "3" },
+    { label: "75%", percent: 75, targetWeight: workingWeight * 0.75, reps: "2" },
+    { label: "85%", percent: 85, targetWeight: workingWeight * 0.85, reps: "1" },
+    { label: "92%", percent: 92, targetWeight: workingWeight * 0.92, reps: "1" }
+  ];
+  const seenLoads = new Set();
+
+  return targets.reduce((sets, target) => {
+    const setup = calculateBarbellSetup(target.targetWeight, config);
+
+    if (setup.actualWeight >= workingWeight && workingWeight > config.barWeight) return sets;
+    if (seenLoads.has(setup.actualWeight)) return sets;
+
+    seenLoads.add(setup.actualWeight);
+    sets.push({
+      ...target,
+      setup
+    });
+    return sets;
+  }, []);
+}
+
+export function calculateOneRepMax(weightValue, repsValue) {
+  const weight = parseTargetWeight(weightValue);
+  const reps = Number.parseInt(String(repsValue).trim(), 10);
+
+  if (!weight || !Number.isFinite(reps) || reps < 1) {
+    return {
+      weight,
+      reps: Number.isFinite(reps) ? reps : null,
+      estimates: [],
+      average: null
+    };
+  }
+
+  const estimates = reps === 1
+    ? [
+        { name: "Epley", value: weight },
+        { name: "Brzycki", value: weight },
+        { name: "Lombardi", value: weight }
+      ]
+    : [
+        { name: "Epley", value: weight * (1 + reps / 30) },
+        { name: "Brzycki", value: reps < 37 ? weight * (36 / (37 - reps)) : null },
+        { name: "Lombardi", value: weight * Math.pow(reps, 0.1) }
+      ].filter((estimate) => Number.isFinite(estimate.value));
+
+  const average = estimates.length > 0
+    ? estimates.reduce((sum, estimate) => sum + estimate.value, 0) / estimates.length
+    : null;
+
+  return {
+    weight,
+    reps,
+    estimates: estimates.map((estimate) => ({
+      ...estimate,
+      value: roundWeight(estimate.value)
+    })),
+    average: average === null ? null : roundWeight(average)
+  };
+}
+
+export function calculatePercentLoads(maxWeightValue, options = {}, percentages = [70, 75, 80, 85, 90]) {
+  const maxWeight = parseTargetWeight(maxWeightValue);
+
+  if (!maxWeight) {
+    return [];
+  }
+
+  return percentages.map((percent) => {
+    const targetWeight = roundWeight(maxWeight * (percent / 100));
+    const setup = calculateBarbellSetup(targetWeight, options);
+
+    return {
+      percent,
+      targetWeight,
+      setup
+    };
+  });
+}
+
 export function normalizeConfig(options = {}) {
   const preset = UNIT_PRESETS[options.unit] ?? DEFAULT_PRESET;
   const barWeight = parsePositiveNumber(options.barWeight, preset.barWeight);

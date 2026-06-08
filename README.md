@@ -11,6 +11,9 @@ A mobile-friendly GitHub Pages app for calculating the closest loadable Olympic 
 - Rounds to the nearest loadable total by default, with ties rounding down.
 - Shows the actual weight, difference from target, and plates needed per side.
 - Displays a clean visual barbell with matching plates on both sides.
+- Suggests warm-up ramp sets for a working weight.
+- Estimates one-rep max using Epley, Brzycki, and Lombardi formulas.
+- Calculates 70%, 75%, 80%, 85%, and 90% loads with plate loading.
 
 ## Local use
 
