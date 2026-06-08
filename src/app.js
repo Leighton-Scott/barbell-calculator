@@ -1,4 +1,4 @@
-import { BAR_WEIGHT, MAX_WEIGHT, calculateBarbellSetup } from "./calculator.js";
+import { BAR_WEIGHT, MAX_WEIGHT, calculateBarbellSetup } from "./calculator.js?v=3";
 
 const plateMeta = {
   45: { className: "plate-45", label: "45" },
