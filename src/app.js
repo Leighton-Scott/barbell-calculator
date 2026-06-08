@@ -1,4 +1,4 @@
-import { BAR_WEIGHT, calculateBarbellSetup } from "./calculator.js";
+import { BAR_WEIGHT, MAX_WEIGHT, calculateBarbellSetup } from "./calculator.js";
 
 const plateMeta = {
   45: { className: "plate-45", label: "45" },
@@ -39,7 +39,7 @@ function createPlateElement(weight, side) {
   plate.setAttribute("aria-hidden", "true");
 
   if (side === "left") {
-    plate.style.order = String(100 - weight);
+    plate.style.order = String(weight);
   }
 
   return plate;
@@ -64,15 +64,23 @@ function renderPlates(container, plates, side) {
 function updateCalculator() {
   const setup = calculateBarbellSetup(targetInput.value);
   const displayTarget = setup.targetWeight === null ? BAR_WEIGHT : setup.targetWeight;
+  const cappedLabel = setup.targetWeight !== null && setup.targetWeight > MAX_WEIGHT
+    ? "Capped at max"
+    : formatDifference(setup.difference);
   const platesText = setup.platesPerSide.length > 0
     ? setup.platesPerSide.map(formatWeight).join(" + ")
     : "Empty bar";
+  const plateScale = Math.max(0.48, Math.min(1, 7.5 / Math.max(setup.platesPerSide.length, 7.5)));
+  const heightScale = Math.max(0.86, Math.min(1, 0.82 + plateScale * 0.18));
 
   requestedWeight.textContent = `${formatWeight(displayTarget)} lb`;
   actualWeight.textContent = `${formatWeight(setup.actualWeight)} lb`;
-  differenceWeight.textContent = formatDifference(setup.difference);
+  differenceWeight.textContent = cappedLabel;
   perSideTotal.textContent = `${formatWeight(setup.sideWeight)} lb`;
   plateList.textContent = platesText;
+  barbellVisual.style.setProperty("--plate-scale", String(plateScale));
+  barbellVisual.style.setProperty("--height-scale", String(heightScale));
+  barbellVisual.dataset.load = setup.platesPerSide.length >= 10 ? "heavy" : "normal";
 
   renderPlates(leftPlates, setup.platesPerSide, "left");
   renderPlates(rightPlates, setup.platesPerSide, "right");

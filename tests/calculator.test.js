@@ -32,4 +32,9 @@ assert.equal(setup("not a number").actualWeight, 45);
 assert.equal(setup(187.5).actualWeight, 185);
 assert.equal(setup(187.6).actualWeight, 190);
 
+assert.equal(setup(1000).actualWeight, 1000);
+assert.deepEqual(setup(1000).platesPerSide, [45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 25, 2.5]);
+
+assert.equal(setup(1200).actualWeight, 1000);
+
 console.log("Calculator tests passed");

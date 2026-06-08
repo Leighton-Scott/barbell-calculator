@@ -1,4 +1,5 @@
 export const BAR_WEIGHT = 45;
+export const MAX_WEIGHT = 1000;
 export const PLATES = [45, 35, 25, 10, 5, 2.5];
 export const LOAD_INCREMENT = 5;
 
@@ -12,14 +13,15 @@ export function roundToLoadableTotal(targetWeight) {
     return BAR_WEIGHT;
   }
 
-  const stepsAboveBar = (targetWeight - BAR_WEIGHT) / LOAD_INCREMENT;
+  const cappedTargetWeight = Math.min(targetWeight, MAX_WEIGHT);
+  const stepsAboveBar = (cappedTargetWeight - BAR_WEIGHT) / LOAD_INCREMENT;
   const lowerSteps = Math.floor(stepsAboveBar);
   const upperSteps = Math.ceil(stepsAboveBar);
   const lowerTotal = BAR_WEIGHT + lowerSteps * LOAD_INCREMENT;
   const upperTotal = BAR_WEIGHT + upperSteps * LOAD_INCREMENT;
 
-  const lowerDelta = Math.abs(targetWeight - lowerTotal);
-  const upperDelta = Math.abs(upperTotal - targetWeight);
+  const lowerDelta = Math.abs(cappedTargetWeight - lowerTotal);
+  const upperDelta = Math.abs(upperTotal - cappedTargetWeight);
 
   return upperDelta < lowerDelta ? upperTotal : lowerTotal;
 }

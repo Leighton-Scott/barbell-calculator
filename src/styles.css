@@ -166,33 +166,52 @@ h1 {
 }
 
 .barbell-stage {
-  min-height: 230px;
+  min-height: 238px;
   display: grid;
   align-items: center;
+  padding: 14px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(236, 240, 244, 0.86)),
-    repeating-linear-gradient(90deg, rgba(23, 32, 47, 0.04) 0, rgba(23, 32, 47, 0.04) 1px, transparent 1px, transparent 24px);
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.96), rgba(239, 242, 246, 0.88)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(236, 240, 244, 0.86));
 }
 
 .barbell {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(124px, 1fr) minmax(76px, 150px) minmax(124px, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(46px, 88px) minmax(0, 1fr);
   align-items: center;
   gap: 0;
   width: 100%;
-  min-height: 210px;
-  padding: 20px clamp(10px, 3vw, 28px);
+  min-height: 200px;
+  padding: 20px clamp(4px, 2vw, 16px);
+  --plate-scale: 1;
+  --height-scale: 1;
+}
+
+.barbell::before {
+  content: "";
+  position: absolute;
+  left: clamp(18px, 5vw, 44px);
+  right: clamp(18px, 5vw, 44px);
+  top: 50%;
+  height: 18px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, #d6dbe3 0%, #8b95a4 42%, #f7f8fa 52%, #747f90 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(23, 32, 47, 0.22),
+    0 4px 10px rgba(23, 32, 47, 0.12);
 }
 
 .shaft {
-  height: 16px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #d6dbe3, #788292 46%, #eff2f5 53%, #8e98a7);
-  box-shadow: inset 0 0 0 1px rgba(23, 32, 47, 0.2);
+  position: relative;
+  z-index: 0;
+  height: 18px;
 }
 
 .sleeve {
@@ -201,24 +220,24 @@ h1 {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: clamp(1px, calc(4px * var(--plate-scale)), 4px);
 }
 
 .sleeve-left {
   justify-content: flex-end;
-  padding-right: 4px;
+  padding-right: 2px;
 }
 
 .sleeve-right {
   justify-content: flex-start;
-  padding-left: 4px;
+  padding-left: 2px;
 }
 
 .sleeve::after {
   content: "";
-  width: 16px;
+  width: 14px;
   height: 34px;
-  flex: 0 0 16px;
+  flex: 0 0 14px;
   border-radius: 3px;
   background: linear-gradient(90deg, #7e8795, #f3f5f7, #727c8c);
   box-shadow: inset 0 0 0 1px rgba(23, 32, 47, 0.24);
@@ -234,63 +253,80 @@ h1 {
 
 .plate {
   flex: 0 0 auto;
-  width: var(--plate-width);
-  height: var(--plate-height);
+  width: max(12px, calc(var(--plate-width) * var(--plate-scale)));
+  height: calc(var(--plate-height) * var(--height-scale));
   display: grid;
   place-items: center;
   border: 1px solid rgba(23, 32, 47, 0.28);
-  border-radius: 5px;
-  color: #fff;
-  font-size: var(--plate-font);
+  border-radius: 4px;
+  color: var(--plate-ink);
+  font-size: clamp(0.48rem, calc(var(--plate-font) * var(--plate-scale)), var(--plate-font));
   font-weight: 900;
   line-height: 1;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  text-shadow: var(--plate-shadow);
   box-shadow:
-    inset 4px 0 10px rgba(255, 255, 255, 0.20),
-    inset -5px 0 10px rgba(0, 0, 0, 0.20),
+    inset 3px 0 8px rgba(255, 255, 255, 0.18),
+    inset -4px 0 8px rgba(0, 0, 0, 0.22),
     0 5px 12px rgba(23, 32, 47, 0.18);
+  white-space: nowrap;
 }
 
 .plate-45 {
-  --plate-width: 28px;
+  --plate-width: 26px;
   --plate-height: 156px;
   --plate-font: 0.74rem;
-  background: #1f2937;
+  --plate-ink: #fff;
+  --plate-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  background: #dc2626;
 }
 
 .plate-35 {
   --plate-width: 24px;
   --plate-height: 138px;
   --plate-font: 0.72rem;
-  background: #2563eb;
+  --plate-ink: #fff;
+  --plate-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  background: #6b7280;
 }
 
 .plate-25 {
   --plate-width: 22px;
   --plate-height: 118px;
   --plate-font: 0.7rem;
-  background: #0f766e;
+  --plate-ink: #fff;
+  --plate-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  background: #2563eb;
 }
 
 .plate-10 {
   --plate-width: 18px;
   --plate-height: 92px;
   --plate-font: 0.68rem;
-  background: #ca8a04;
+  --plate-ink: #fff;
+  --plate-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+  background: #111827;
 }
 
 .plate-5 {
-  --plate-width: 16px;
+  --plate-width: 17px;
   --plate-height: 72px;
   --plate-font: 0.62rem;
-  background: #7c3aed;
+  --plate-ink: #fff;
+  --plate-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  background: #16a34a;
 }
 
 .plate-2-5 {
-  --plate-width: 14px;
+  --plate-width: 22px;
   --plate-height: 56px;
-  --plate-font: 0.56rem;
-  background: #b45309;
+  --plate-font: 0.52rem;
+  --plate-ink: #17202f;
+  --plate-shadow: none;
+  background: #facc15;
+}
+
+.barbell[data-load="heavy"] .plate {
+  font-size: 0;
 }
 
 .empty-sleeve {
@@ -351,16 +387,26 @@ h1 {
 
   .barbell-stage {
     min-height: 210px;
+    padding: 10px;
   }
 
   .barbell {
-    grid-template-columns: minmax(96px, 1fr) minmax(50px, 78px) minmax(96px, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(34px, 54px) minmax(0, 1fr);
     min-height: 190px;
-    padding-inline: 8px;
+    padding-inline: 2px;
+  }
+
+  .sleeve {
+    gap: 1px;
+  }
+
+  .sleeve::after {
+    width: 10px;
+    flex-basis: 10px;
   }
 
   .plate {
-    width: max(10px, calc(var(--plate-width) * 0.78));
+    width: max(7px, calc(var(--plate-width) * var(--plate-scale) * 0.56));
     height: calc(var(--plate-height) * 0.82);
     font-size: 0;
   }
