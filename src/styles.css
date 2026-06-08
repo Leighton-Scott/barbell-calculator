@@ -659,7 +659,7 @@ h1 {
 }
 
 .tool-form.two-column {
-  grid-template-columns: minmax(0, 1fr) minmax(74px, 0.55fr);
+  grid-template-columns: 1fr;
 }
 
 .result-list,
