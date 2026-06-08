@@ -671,7 +671,7 @@ h1 {
 .result-row {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(54px, 0.5fr) minmax(0, 0.75fr);
+  grid-template-columns: minmax(0, 1fr) max-content;
   gap: 3px 10px;
   align-items: baseline;
   padding: 10px;
@@ -685,8 +685,9 @@ h1 {
   justify-self: end;
   font-size: 1rem;
   line-height: 1.1;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   text-align: right;
+  white-space: nowrap;
 }
 
 .result-row p {
